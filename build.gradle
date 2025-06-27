@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation group: 'com.pi4j', name: 'pi4j-core', version: '2.8.0'
+    implementation group: 'com.pi4j', name: 'pi4j-plugin-gpiod', version: '2.8.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+                "Main-Class": "org.example.Main"
+        )
+    }
+}
+
+tasks.withType(Jar).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// ENTER SPECIFICS FOR YOUR RASPBERRY PI TO SPEED UP PROCESS  ./gradlew deployToPi
+String rpiAddress = "192.168.50.253"
+String rPiDirectory = "Desktop/mySensor"
+
+task deployToPi(type: Exec) {
+    dependsOn installDist
+    commandLine 'sshpass', '-p', 'raspberry', 'scp', '-r',
+            "${buildDir}/install/my_Sensor",
+            "pi@${rpiAddress}:/home/pi/${rPiDirectory}"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
