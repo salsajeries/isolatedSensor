@@ -34,14 +34,14 @@ tasks.withType(Jar).configureEach {
 }
 
 // ENTER SPECIFICS FOR YOUR RASPBERRY PI TO SPEED UP PROCESS  ./gradlew deployToPi
-String rpiAddress = "192.168.1.191"
-String rPiDirectory = "Desktop/salwa/test"
+String rpiAddress = "192.168.0.159"
+String rPiDirectory = "Desktop/salwa"
 
 task deployToPi(type: Exec) {
     dependsOn installDist
-    commandLine 'sshpass', '-p', 'brown', 'scp', '-r',
+    commandLine 'sshpass', '-p', 'raspberrypi', 'scp', '-r',
             "${buildDir}/install/my_Sensor",
-            "bill@${rpiAddress}:/home/bill/${rPiDirectory}"
+            "pi@${rpiAddress}:/home/pi/${rPiDirectory}"
 }
 
 java {
